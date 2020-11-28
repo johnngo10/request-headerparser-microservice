@@ -2,12 +2,14 @@
 // where your node app starts
 
 // init project
-var express = require('express');
-var app = express();
+let express = require('express');
+let app = express();
+const requestIp = require('request-ip');
+
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
-var cors = require('cors');
+let cors = require('cors');
 app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 204
 
 // http://expressjs.com/en/starter/static-files.html
@@ -24,9 +26,16 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+app.get("/api/whoami", function(req, res) {
+  const clientIp = requestIp.getClientIp(req);
+  const language = req.acceptsLanguages();
+  const software = req.get('User-Agent');
+  res.json({ip: clientIp, language: language, software: software});
+})
+
 
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
-  console.log('Your app is listening on port ' + listener.address().port);
-});
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
